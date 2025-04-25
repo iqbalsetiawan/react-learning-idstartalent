@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #taskList { margin-top: 20px; }
+        #taskList > div { margin-bottom: 10px; }
+        #totalTasks { margin: 20px 0; }
+        button { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>ToDo List</h1>
+    <input type="text" id="taskInput" placeholder="Masukkan tugas" onkeydown="if (event.keyCode === 13) addTask()">
+    <button onclick="addTask()">Tambah</button>
+    
+    <div id="taskList"></div>
+    <div id="totalTasks"></div>
+    <button onclick="markAllAsDone()">Tandai Semua Selesai</button>
+    <button onclick="deleteAllTasks()">Hapus Semua</button>
+
+    <script>
+        // array untuk menyimpan tugas
+        let tasks = [];
+
+        // fungsi untuk menambah tugas
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const task = taskInput.value.trim();
+            if (task) {
+                // menambahkan tugas ke array
+                tasks.push({ name: task, completed: false });
+                // mengosongkan input
+                taskInput.value = '';
+                // menampilkan tugas
+                renderTasks();
+            }
+        }
+
+        // fungsi untuk menampilkan tugas
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('div');
+                taskItem.innerHTML = `
+                    <input type="checkbox" onchange="toggleTask(${index})" ${task.completed ? 'checked' : ''}>
+                    <span style="text-decoration: ${task.completed ? 'line-through' : 'none'};">${task.name}</span> 
+                    <button onclick="deleteTask(${index})">Hapus</button>
+                `;
+                taskList.appendChild(taskItem);
+            });
+            // update total tugas
+            updateTotalTasks();
+        }
+
+        // fungsi untuk mengubah status tugas
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            // menampilkan tugas
+            renderTasks();
+            // jika semua tugas selesai
+            if (allTasksCompleted()) {
+                // memberikan peringatan
+                setTimeout(() => alert("Semua tugas telah diselesaikan!"), 300);
+            }
+        }
+
+        // fungsi untuk menghapus tugas
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            // menampilkan tugas
+            renderTasks();
+        }
+
+        // fungsi untuk menghapus semua tugas
+        function deleteAllTasks() {
+            tasks = [];
+            // menampilkan tugas
+            renderTasks();
+        }
+
+        // fungsi untuk menandai semua tugas selesai
+        function markAllAsDone() {
+            tasks.forEach(task => task.completed = true);
+            // menampilkan tugas
+            renderTasks();
+            // jika semua tugas selesai
+            if (allTasksCompleted()) {
+                // memberikan peringatan
+                setTimeout(() => alert("Semua tugas telah diselesaikan!"), 300);
+            }
+        }
+
+        // fungsi untuk mengupdate total tugas
+        function updateTotalTasks() {
+            const totalTasks = tasks.filter(task => !task.completed).length;
+            document.getElementById('totalTasks').innerText = `Total Tugas Belum Selesai: ${totalTasks}`;
+        }
+
+        // fungsi untuk memeriksa apakah semua tugas selesai
+        function allTasksCompleted() {
+            return tasks.every(task => task.completed);
+        }
+    </script>
+</body>
+</html>
+
